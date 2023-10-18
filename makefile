@@ -10,6 +10,9 @@ all: $(OUT)
 $(OUT): $(SRC)
 	$(CXX) $(CXXFLAGS) -o $(OUT) $(SRC)
 
+main.o: main.cpp main.h
+	$(CXX) $(CXXFLAGS) -c main.cpp
+
 clean:
 	rm -f $(OUT)
 
