@@ -1,19 +1,23 @@
 # Makefile for a C++ project with main.cpp
 
 CXX = g++              # C++ compiler
-CXXFLAGS = -std=c++11  # C++11 standard
-SRC = main.cpp         # Source file
-OUT = my_program       # Output executable name
+CXXFLAGS = -Wall -I./problems -I./solvers -std=c++11 
 
-all: $(OUT)
+SRCDIR = .
+PROBLEM_DIR = ./problems
 
-$(OUT): $(SRC)
-	$(CXX) $(CXXFLAGS) -o $(OUT) $(SRC)
+SOURCES = $(SRCDIR)/main.cpp
+OBJECTS = $(SOURCES:.cpp=.o)
 
-main.o: main.cpp main.h
-	$(CXX) $(CXXFLAGS) -c main.cpp
+PROGRAM = chungus
+
+all: $(PROGRAM)
+
+$(PROGRAM): $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OUT)
-
-.PHONY: all clean
+	rm -f $(OBJECTS) $(PROGRAM)
