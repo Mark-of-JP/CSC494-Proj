@@ -12,7 +12,7 @@ class UncapacitatedRandomEquation : public OptProblem {
 
             return (x*x - 5) + (y * y * y * y + 4 * y * y * y + y * y - 4 * y) + (x * x * y * y);
         };
-        uint getInputDimension() override { return 2; };
+        int getInputDimension() override { return 2; };
         double* getInputConstraints() override { 
             // Do not trust this. I should malloc
             double constraints[2] = { 9999.0, 9999.0 };
@@ -22,7 +22,7 @@ class UncapacitatedRandomEquation : public OptProblem {
 
 
         double** generateRandomFeasibleInputs(uint num_of_inputs, uint randomSeed) override { 
-            double **feasible_inputs = new double*[2]; 
+            double **feasible_inputs = new double*[num_of_inputs]; 
             uint input_dimension = getInputDimension();
 
             srand(randomSeed); 
@@ -45,7 +45,7 @@ class UncapacitatedRandomEquation : public OptProblem {
             problemInfo.push_back(this->getInputDimension());
 
             // Insert constraints
-            int *constraints = this->getInputConstraints();
+            double *constraints = this->getInputConstraints();
             for (int i = 0; i < this->getInputDimension(); i++) {
                 problemInfo.push_back(constraints[i]);
             }
