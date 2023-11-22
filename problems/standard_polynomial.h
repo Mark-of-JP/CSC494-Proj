@@ -1,10 +1,27 @@
 #include "opt_problem.h"
+#include <math.h>
 
 // Optimal solution is (0, -2.67298)
-class UncapacitatedRandomEquation : public OptProblem {
+class StandardPolynomial : public OptProblem {
     public:
-        UncapacitatedRandomEquation() 
-        : OptProblem(OptimizationType::CONTINUOUS) {}
+        StandardPolynomial(uint num_of_terms, uint num_of_zeroes, double randomSeed) 
+        : OptProblem(OptimizationType::CONTINUOUS) {
+            uint deriv_term[num_of_zeroes];
+            double term_zero[num_of_zeroes];
+
+            srand(randomSeed); 
+
+            for (int i = 0; i < num_of_zeroes; i++) {
+                deriv_term[i] = rand() % num_of_terms;
+                term_zero[i] = (rand() / RAND_MAX) + (rand() % 100000);
+            }
+
+            
+        }
+
+        ~StandardPolynomial() {
+
+        }
 
         double f_implement(double *input) override {
             double x = input[0];
@@ -65,7 +82,10 @@ class UncapacitatedRandomEquation : public OptProblem {
 
             file.close();
         };
+
+    private:
+        uint num_of_terms;
+        std::vector<bool*> terms;
+        std::vector<int*> exponents;
+
 };
-
-
-
