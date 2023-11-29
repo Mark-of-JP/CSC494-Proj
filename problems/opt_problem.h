@@ -21,6 +21,7 @@ class OptProblem {
         virtual double f_implement(double *input) = 0;
         virtual int getInputDimension() = 0;
         virtual double* getInputConstraints() = 0;
+        virtual double* getBestInput() = 0;
 
         virtual double** generateRandomFeasibleInputs(uint num_of_inputs, uint randomSeed) = 0;
         virtual void writeToFile(std::string path) = 0;

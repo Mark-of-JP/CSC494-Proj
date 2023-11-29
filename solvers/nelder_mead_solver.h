@@ -5,6 +5,7 @@ class Nelder_Mead_Solver : public OptSolver {
         double* solve(OptProblem *optProblem, uint randomSeed) override {
 
             // Simple Nelder-Mead Simplex Algorithm
+            uint input_dimension = optProblem->getInputDimension();
 
             double **simplex_vertices = optProblem->generateRandomFeasibleInputs(3, randomSeed);
             for (int i = 0; i < 300; i++) {
@@ -12,7 +13,7 @@ class Nelder_Mead_Solver : public OptSolver {
                     double function_evals[3];
                     uint vertices_order[3];
 
-                    std::cout << "\nTesting index: " << i << std::endl; 
+                    // std::cout << "\nTesting index: " << i << std::endl; 
                     for (uint j = 0; j < 3; j++) {
                         function_evals[j] = optProblem->f(simplex_vertices[j]);
                         vertices_order[j] = j;
@@ -30,8 +31,8 @@ class Nelder_Mead_Solver : public OptSolver {
                         }
                     }
 
-                    std::cout << "Simplex Vertices are (" << simplex_vertices[vertices_order[0]][0] << ", " << simplex_vertices[vertices_order[0]][1] << "), (" << simplex_vertices[vertices_order[1]][0] << ", " << simplex_vertices[vertices_order[1]][1] << "), (" << simplex_vertices[vertices_order[2]][0] << ", " << simplex_vertices[vertices_order[2]][1] << ")" << std::endl;
-                    std::cout << "Best input: (" << simplex_vertices[vertices_order[0]][0] << ", " << simplex_vertices[vertices_order[0]][1] << ") => " << function_evals[vertices_order[0]] << std::endl;
+                    // std::cout << "Simplex Vertices are (" << simplex_vertices[vertices_order[0]][0] << ", " << simplex_vertices[vertices_order[0]][1] << "), (" << simplex_vertices[vertices_order[1]][0] << ", " << simplex_vertices[vertices_order[1]][1] << "), (" << simplex_vertices[vertices_order[2]][0] << ", " << simplex_vertices[vertices_order[2]][1] << ")" << std::endl;
+                    // std::cout << "Best input: (" << simplex_vertices[vertices_order[0]][0] << ", " << simplex_vertices[vertices_order[0]][1] << ") => " << function_evals[vertices_order[0]] << std::endl;
 
 
                     // Calculate the centroid of the best vertices
@@ -46,8 +47,8 @@ class Nelder_Mead_Solver : public OptSolver {
 
                     double new_point_eval = optProblem->f(new_point);
 
-                    std::cout << "New Point: (" << new_point[0] << ", " << new_point[1] << ") => " << new_point_eval << std::endl;
-                    std::cout << "New Point deviation: (" << best_centroid[0] - simplex_vertices[vertices_order[2]][0] << ", " << best_centroid[1] - simplex_vertices[vertices_order[2]][1] << ") => " << new_point_eval << std::endl;
+                    // std::cout << "New Point: (" << new_point[0] << ", " << new_point[1] << ") => " << new_point_eval << std::endl;
+                    // std::cout << "New Point deviation: (" << best_centroid[0] - simplex_vertices[vertices_order[2]][0] << ", " << best_centroid[1] - simplex_vertices[vertices_order[2]][1] << ") => " << new_point_eval << std::endl;
                     // std::cout << "Testing new_point: (" << new_point[0] << ", " << new_point[1] << ")." << std::endl;
                     // std::cout << "Testing new_point_eval: (" << new_point_eval << ")." << std::endl;
 
@@ -61,10 +62,10 @@ class Nelder_Mead_Solver : public OptSolver {
 
                         if (greedy_point_eval <= new_point_eval) {
                             simplex_vertices[vertices_order[2]] = greedy_point;
-                            std::cout << "GREED" << std::endl;
+                            // std::cout << "GREED" << std::endl;
                         } else {
                             simplex_vertices[vertices_order[2]] = new_point;
-                            std::cout << "EXPAND" << std::endl;
+                            // std::cout << "EXPAND" << std::endl;
                         }
 
                         continue;
@@ -94,13 +95,13 @@ class Nelder_Mead_Solver : public OptSolver {
                     if (best_contract_point_eval <= function_evals[vertices_order[1]]) {
                         simplex_vertices[vertices_order[2]] = best_contract_point;
 
-                        std::cout << "CONTRACT" << std::endl;
+                        // std::cout << "CONTRACT" << std::endl;
 
                         continue;
                     }
 
                     // Shrink
-                    std::cout << "Before shrinking vertices are (" << simplex_vertices[vertices_order[0]][0] << ", " << simplex_vertices[vertices_order[0]][1] << "), (" << simplex_vertices[vertices_order[1]][0] << ", " << simplex_vertices[vertices_order[1]][1] << "), (" << simplex_vertices[vertices_order[2]][0] << ", " << simplex_vertices[vertices_order[2]][1] << ")" << std::endl;
+                    // std::cout << "Before shrinking vertices are (" << simplex_vertices[vertices_order[0]][0] << ", " << simplex_vertices[vertices_order[0]][1] << "), (" << simplex_vertices[vertices_order[1]][0] << ", " << simplex_vertices[vertices_order[1]][1] << "), (" << simplex_vertices[vertices_order[2]][0] << ", " << simplex_vertices[vertices_order[2]][1] << ")" << std::endl;
                     double *shrink_1 = new double[2];
                     double *shrink_2 = new double[2];
                     
@@ -113,10 +114,16 @@ class Nelder_Mead_Solver : public OptSolver {
                     simplex_vertices[vertices_order[1]] = shrink_1;
                     simplex_vertices[vertices_order[2]] = shrink_2;
 
-                    std::cout << "Shrinking Vertices are (" << simplex_vertices[vertices_order[0]][0] << ", " << simplex_vertices[vertices_order[0]][1] << "), (" << simplex_vertices[vertices_order[1]][0] << ", " << simplex_vertices[vertices_order[1]][1] << "), (" << simplex_vertices[vertices_order[2]][0] << ", " << simplex_vertices[vertices_order[2]][1] << ")" << std::endl;
-                    std::cout << "SHRINK" << std::endl;
+                    // std::cout << "Shrinking Vertices are (" << simplex_vertices[vertices_order[0]][0] << ", " << simplex_vertices[vertices_order[0]][1] << "), (" << simplex_vertices[vertices_order[1]][0] << ", " << simplex_vertices[vertices_order[1]][1] << "), (" << simplex_vertices[vertices_order[2]][0] << ", " << simplex_vertices[vertices_order[2]][1] << ")" << std::endl;
+                    // std::cout << "SHRINK" << std::endl;
+            }
+            
+            double *best_solution = new double[input_dimension];
+
+            for (int i = 0; i < input_dimension; i++) {
+                best_solution[i] = simplex_vertices[0][i];
             }
 
-            return simplex_vertices[0];
+            return best_solution;
         }
 };

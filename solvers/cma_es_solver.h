@@ -58,29 +58,35 @@ class CMA_ES_Solver : public OptSolver {
                 
 
                 for (int sample_index = 0; sample_index < num_of_samples; sample_index++) {
-                    std::cout << "Order " << f_vals[sample_order[sample_index]] << std::endl;
+                    // std::cout << "Order " << f_vals[sample_order[sample_index]] << std::endl;
                 }
 
 
                 Eigen::VectorXd aux_vector(input_dimension);
                 for (int sample_index = 0; sample_index < num_of_samples_kept; sample_index++) {
-                    aux_vector += samples_taken[sample_order[sample_index]];
+                    aux_vector += (samples_taken[sample_order[sample_index]] - mean_vector);
                 }
                 aux_vector = aux_vector / num_of_samples_kept;
 
-                std::cout << "Aux " << aux_vector << std::endl;
+                // std::cout << "Aux " << aux_vector << std::endl;
 
 
                 //Moving mean
                 mean_vector += (step_size * aux_vector);
                 covariance_matrix = (0.8 * covariance_matrix) + 0.2 * aux_vector * aux_vector.transpose();
 
-                std::cout << "Mean " << mean_vector << std::endl;
+                // std::cout << "Mean " << mean_vector << std::endl;
             }
 
-            std::cout << samples_taken[sample_order[0]] << " -> " << f_vals[sample_order[0]] << std::endl;
+            // std::cout << samples_taken[sample_order[0]] << " -> " << f_vals[sample_order[0]] << std::endl;
 
-            return samples_taken[sample_order[0]].data();
+            double *best_solution = new double[input_dimension];
+
+            for (int i = 0; i < input_dimension; i++) {
+                best_solution[i] = samples_taken[sample_order[0]].data()[i];
+            }
+
+            return best_solution;
         }
 
     private:

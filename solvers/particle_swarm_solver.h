@@ -75,7 +75,7 @@ class PSO_Solver : public OptSolver {
 
                 // std::cout << "New Velocity Set." << std::endl;
                     
-                std::cout << "\nStart. " << curr_iteration << std::endl;
+                // std::cout << "\nStart. " << curr_iteration << std::endl;
                 for (int particle_index = 0; particle_index < this->num_of_particles; particle_index++) {
                     
 
@@ -118,10 +118,16 @@ class PSO_Solver : public OptSolver {
                     }
                 }
 
-                std::cout << "Curr Best is: " << particle_solo_best_value[best_particle_index] << std::endl;
+                // std::cout << "Curr Best is: " << particle_solo_best_value[best_particle_index] << std::endl;
             }
 
-            return particle_solo_best_position[best_particle_index];
+            double *best_solution = new double[input_dimension];
+
+            for (int i = 0; i < input_dimension; i++) {
+                best_solution[i] = particle_solo_best_position[best_particle_index][i];
+            }
+
+            return best_solution;
         }
 
     private:

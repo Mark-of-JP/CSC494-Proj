@@ -21,6 +21,13 @@ class UncapacitatedRandomEquation : public OptProblem {
         };
 
 
+        double* getBestInput() override {
+            double best_input[2] = { 0, -2.67298};
+
+            return best_input;
+        }
+
+
         double** generateRandomFeasibleInputs(uint num_of_inputs, uint randomSeed) override { 
             double **feasible_inputs = new double*[num_of_inputs]; 
             uint input_dimension = getInputDimension();
