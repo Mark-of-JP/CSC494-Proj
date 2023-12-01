@@ -118,13 +118,13 @@ class PSO_Solver : public OptSolver {
                     }
                 }
 
-                // std::cout << "Curr Best is: " << particle_solo_best_value[best_particle_index] << std::endl;
+                // std::cout << "Curr Best is: (" << particle_position[best_particle_index][0] << ", " << particle_position[best_particle_index][1] << ") -> " << particle_solo_best_value[best_particle_index] << "/" << optProblem->f(particle_position[best_particle_index]) << std::endl;
             }
 
             double *best_solution = new double[input_dimension];
 
             for (int i = 0; i < input_dimension; i++) {
-                best_solution[i] = particle_solo_best_position[best_particle_index][i];
+                best_solution[i] = particle_position[best_particle_index][i];
             }
 
             return best_solution;

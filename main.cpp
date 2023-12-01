@@ -66,9 +66,9 @@ int main() {
     nms_solution = nms2.solve(&sp, (unsigned) time(NULL));
     std::cout << "Nelder Mead Solution (" << nms_solution[0] << ", " << nms_solution[1] << ", " << nms_solution[2] << ") -> " << sp.f(nms_solution) << std::endl;
 
-    PSO_Solver pso2(20, 2000, 0.5, 2, 2);
-    std::cout << "PSO Solution (" << pso_solution[0] << ", " << pso_solution[1] << ", " << pso_solution[2] << ") -> " << sp.f(pso_solution) << std::endl;
+    PSO_Solver pso2(50, 2000, 0.5, 2, 2);
     pso_solution = pso2.solve(&sp, (unsigned) time(NULL));
+    std::cout << "PSO Solution (" << pso_solution[0] << ", " << pso_solution[1] << ", " << pso_solution[2] << ") -> " << sp.f(pso_solution) << std::endl;
 
     CMA_ES_Solver cma_es2(10, 1, 0.5, 100);
     cma_es_solution = cma_es2.solve(&sp, 5406);
