@@ -1,5 +1,5 @@
 #include "opt_solver.h"
-#include "../utils.h"
+#include <unsupported/Eigen/MatrixFunctions>
 
 class CMA_ES_Solver : public OptSolver {
     public:
@@ -18,13 +18,22 @@ class CMA_ES_Solver : public OptSolver {
 
             uint input_dimension = optProblem->getInputDimension();
 
-            double mean[input_dimension] = { 0 };
+            double *mean = optProblem->generateRandomFeasibleInputs(1, randomSeed)[0];
             Eigen::Map<Eigen::VectorXd> mean_vector(mean, input_dimension);
+            // std::cout << "Mean Vector: " << mean_vector << std::endl;
             Eigen::MatrixXd covariance_matrix = Eigen::MatrixXd::Identity(input_dimension, input_dimension);
             Eigen::MatrixXd samples_taken[num_of_samples];
 
             double f_vals[num_of_samples];
             std::vector<uint> sample_order;
+
+            // Updating evolution path
+            double p_sigma_array[input_dimension] = {0};
+            Eigen::Map<Eigen::VectorXd> p_sigma(p_sigma_array, input_dimension);
+
+            // Mu W
+            double mu_w = (double) this->num_of_samples_kept;
+            double c_sigma = 3.0 / (double) this->num_of_samples; 
 
             for (int curr_step = 0; curr_step < this->num_of_steps; curr_step++) {
 
@@ -72,8 +81,17 @@ class CMA_ES_Solver : public OptSolver {
 
 
                 //Moving mean
-                mean_vector += (step_size * aux_vector);
-                covariance_matrix = (0.8 * covariance_matrix) + 0.2 * aux_vector * aux_vector.transpose();
+                mean_vector += (aux_vector);
+                
+                Eigen::MatrixXd c_inverse = covariance_matrix.inverse();
+                Eigen::MatrixXd c_inverse_sqrt = c_inverse.sqrt();
+
+                p_sigma = (1 - c_sigma) * p_sigma + sqrt(1 - (1 - c_sigma) * (1 - c_sigma)) * sqrt(mu_w) * c_inverse_sqrt * (aux_vector / step_size);
+
+                covariance_matrix = (0.8 * covariance_matrix) + (0.2) * (aux_vector / step_size) * (aux_vector.transpose() / step_size);
+
+                step_size *= exp(c_sigma / 1.1 * ((p_sigma.norm() / (sqrt(this->num_of_samples) * (1 - 1.0 / ((double) 4 * this->num_of_samples) + 1.0 / ((double) 21 * this->num_of_samples * this->num_of_samples)))) - 1));
+                // std::cout << step_size << std::endl;Goo
 
                 // std::cout << "Mean " << mean_vector << std::endl;
             }

@@ -7,6 +7,8 @@
 #include <cstdlib>
 #include <vector>
 
+#include "../utils.h"
+
 typedef unsigned int uint;
 
 enum class OptimizationType {
@@ -21,7 +23,8 @@ class OptProblem {
         virtual double f_implement(double *input) = 0;
         virtual int getInputDimension() = 0;
         virtual double* getInputConstraints() = 0;
-        virtual double* getBestInput() = 0;
+        virtual double* getBestInput(bool getLeast = true) = 0;
+        virtual bool isWithinBounds(double *input) = 0;
 
         virtual double** generateRandomFeasibleInputs(uint num_of_inputs, uint randomSeed) = 0;
         virtual void writeToFile(std::string path) = 0;

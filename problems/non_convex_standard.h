@@ -15,16 +15,31 @@ class UncapacitatedRandomEquation : public OptProblem {
         int getInputDimension() override { return 2; };
         double* getInputConstraints() override { 
             // Do not trust this. I should malloc
-            double constraints[2] = { 9999.0, 9999.0 };
+            double constraints[4] = { 9999.0, 9999.0, 9999, 9999 };
 
             return constraints; 
         };
 
 
-        double* getBestInput() override {
+        double* getBestInput(bool getLeast) override {
             double best_input[2] = { 0, -2.67298};
 
             return best_input;
+        }
+
+        bool isWithinBounds(double *input) override {
+
+            double *constraints = this->getInputConstraints();
+
+            for (int i = 0; i < 2; i++) {
+
+                if (input[i] < constraints[i * 2] || constraints[(i * 2) + 1] < input[i]) {
+                    return false;
+                }
+
+            }
+
+            return true;
         }
 
 
