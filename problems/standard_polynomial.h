@@ -31,7 +31,7 @@ class StandardPolynomial : public OptProblem {
                 PolynomialTerm *zero_term = new PolynomialTerm(num_of_terms, term_zero[i]);
                 poly_terms.push_back(zero_term);
             }
-            std::cout << std::endl;
+            // std::cout << std::endl;
 
             // Added the extra terms
             for (int i = 0; i < this->num_of_terms; i++) {
@@ -41,8 +41,6 @@ class StandardPolynomial : public OptProblem {
             }
 
             for (int initial_terms = 0; initial_terms < num_of_zeroes; initial_terms++) {
-
-                // std::cout << "BLERGH: " << initial_terms << " -> " << this->expanded_terms.size() << std::endl;
                 
                 // Mutliply with polyterms
                 PolynomialTerm *curr_var_term = poly_terms[initial_terms * 2];
@@ -68,14 +66,44 @@ class StandardPolynomial : public OptProblem {
                 }
 
                 this->expanded_terms.clear();
-                this->expanded_terms.insert(std::end(this->expanded_terms), std::begin(new_terms), std::end(new_terms));
+
+                // Collect like terms
+                for (int new_terms_1 = 0; new_terms_1 < new_terms.size(); new_terms_1++) {
+
+                    PolynomialTerm *collected_term = new_terms[new_terms_1];
+
+                    if (collected_term == nullptr) {
+                        continue;
+                    }
+
+                    for (int new_terms_2 = new_terms_1 + 1; new_terms_2 < new_terms.size(); new_terms_2++) {
+
+                        PolynomialTerm *addition_term = new_terms[new_terms_2];
+
+                        if (addition_term == nullptr) {
+                            continue;
+                        }
+
+                        bool is_collected = collected_term->Add(addition_term, collected_term);
+
+                        if (is_collected) {
+                            delete addition_term;
+
+                            new_terms[new_terms_2] = nullptr;
+                        }
+                    }
+
+                    this->expanded_terms.push_back(collected_term);
+                }
+
+                // this->expanded_terms.insert(std::end(this->expanded_terms), std::begin(new_terms), std::end(new_terms));
             }
 
-            std::cout << "\nbefore derivative: " << std::endl;
-            for (int i = 0; i < this->expanded_terms.size(); i++) {
-                std::cout << " + " << this->expanded_terms[i]->toString();
-            }
-            std::cout << std::endl;
+            // std::cout << "\nbefore derivative: " << std::endl;
+            // for (int i = 0; i < this->expanded_terms.size(); i++) {
+            //     std::cout << " + " << this->expanded_terms[i]->toString();
+            // }
+            // std::cout << std::endl;
 
             
             //Get the antiderivative
@@ -164,7 +192,6 @@ class StandardPolynomial : public OptProblem {
 
             // If not within bounds then apply penalty
             if (!this->isWithinBounds(input)) {
-                // std::cout << "NOT WITHIN BOUNDS: " << this-> worst_point << std::endl;
                 double penalty_value = 2 * this->worst_point;
 
                 for (int i = 0; i < this->num_of_terms; i++) {

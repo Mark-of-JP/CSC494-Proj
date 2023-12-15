@@ -2,33 +2,32 @@
 
 class Nelder_Mead_Solver : public OptSolver {
     public:
-        Nelder_Mead_Solver(int num_of_vertices) 
+        Nelder_Mead_Solver(int num_of_vertices, uint num_of_iterations) 
             : OptSolver() {
                 this->num_of_vertices = num_of_vertices;
+                this->num_of_iterations = num_of_iterations;
         }
 
-        double* solve(OptProblem *optProblem, uint randomSeed) override {
+        double* solve(OptProblem *optProblem, uint randomSeed, std::vector<double> *best_answer, std::vector<int> *num_of_f_calls, std::vector<int> *num_of_time_passed) override {
+
+            // Record Time
+            auto started = std::chrono::high_resolution_clock::now();
 
             // Simple Nelder-Mead Simplex Algorithm
             uint input_dimension = optProblem->getInputDimension();
-
-            std::cout << "START" << std::endl;
 
             double **simplex_vertices = optProblem->generateRandomFeasibleInputs(this->num_of_vertices, randomSeed);
             double function_evals[this->num_of_vertices];
             uint vertices_order[this->num_of_vertices];
 
-            std::cout << "Generated" << std::endl;
-            for (int i = 0; i < 300; i++) {
+            for (int i = 0; i < this->num_of_iterations; i++) {
                     // Sort the simplex by the function values
 
-                    // std::cout << "\nTesting index: " << i << std::endl; 
                     for (uint j = 0; j < this->num_of_vertices; j++) {
                         function_evals[j] = optProblem->f(simplex_vertices[j]);
                         vertices_order[j] = j;
                     }
 
-                    // std::cout << "Testing bubble sort" << std::endl; 
                     for (int k = 0; k < this->num_of_vertices - 1; k++) {
                         for (int l = 0; l < this->num_of_vertices - k - 1; l++) {
                             if (function_evals[vertices_order[l]] > function_evals[vertices_order[l + 1]]) {
@@ -40,9 +39,13 @@ class Nelder_Mead_Solver : public OptSolver {
                         }
                     }
 
-                    // std::cout << "Simplex Vertices are (" << simplex_vertices[vertices_order[0]][0] << ", " << simplex_vertices[vertices_order[0]][1] << "), (" << simplex_vertices[vertices_order[1]][0] << ", " << simplex_vertices[vertices_order[1]][1] << "), (" << simplex_vertices[vertices_order[2]][0] << ", " << simplex_vertices[vertices_order[2]][1] << ")" << std::endl;
-                    // std::cout << "Best input: (" << simplex_vertices[vertices_order[0]][0] << ", " << simplex_vertices[vertices_order[0]][1] << ") => " << function_evals[vertices_order[0]] << std::endl;
+                    // Push to info
+                    best_answer->push_back(function_evals[vertices_order[0]]);
+                    num_of_f_calls->push_back(optProblem->getNumCalled());
 
+                    // Timer
+                    auto done = std::chrono::high_resolution_clock::now();
+                    num_of_time_passed->push_back(std::chrono::duration_cast<std::chrono::milliseconds>(done-started).count());
 
                     // Calculate the centroid of the best vertices
                     double best_centroid[input_dimension] = {0};
@@ -61,11 +64,6 @@ class Nelder_Mead_Solver : public OptSolver {
                     }
 
                     double new_point_eval = optProblem->f(new_point);
-
-                    // std::cout << "New Point: (" << new_point[0] << ", " << new_point[1] << ") => " << new_point_eval << std::endl;
-                    // std::cout << "New Point deviation: (" << best_centroid[0] - simplex_vertices[vertices_order[2]][0] << ", " << best_centroid[1] - simplex_vertices[vertices_order[2]][1] << ") => " << new_point_eval << std::endl;
-                    // std::cout << "Testing new_point: (" << new_point[0] << ", " << new_point[1] << ")." << std::endl;
-                    // std::cout << "Testing new_point_eval: (" << new_point_eval << ")." << std::endl;
 
                     // Expand
                     if (new_point_eval <= function_evals[vertices_order[0]]) {
@@ -117,7 +115,6 @@ class Nelder_Mead_Solver : public OptSolver {
                     }
 
                     // Shrink
-                    // std::cout << "Before shrinking vertices are (" << simplex_vertices[vertices_order[0]][0] << ", " << simplex_vertices[vertices_order[0]][1] << "), (" << simplex_vertices[vertices_order[1]][0] << ", " << simplex_vertices[vertices_order[1]][1] << "), (" << simplex_vertices[vertices_order[2]][0] << ", " << simplex_vertices[vertices_order[2]][1] << ")" << std::endl;
                     double **shrinks = new double*[this->num_of_vertices - 1];
 
                     for (int curr_vertex = 1; curr_vertex < this->num_of_vertices; curr_vertex++) {
@@ -132,11 +129,10 @@ class Nelder_Mead_Solver : public OptSolver {
                         simplex_vertices[vertices_order[curr_vertex]] = shrinks[curr_vertex - 1];
                     }
 
-                    // std::cout << "Shrinking Vertices are (" << simplex_vertices[vertices_order[0]][0] << ", " << simplex_vertices[vertices_order[0]][1] << "), (" << simplex_vertices[vertices_order[1]][0] << ", " << simplex_vertices[vertices_order[1]][1] << "), (" << simplex_vertices[vertices_order[2]][0] << ", " << simplex_vertices[vertices_order[2]][1] << ")" << std::endl;
-                    // std::cout << "SHRINK" << std::endl;
+                    
             }
 
-            std::cout << "Solved" << std::endl;
+            // std::cout << "Solved" << std::endl;
             
             double *best_solution = new double[input_dimension];
 
@@ -149,4 +145,5 @@ class Nelder_Mead_Solver : public OptSolver {
 
     private:
         uint num_of_vertices;
+        uint num_of_iterations;
 };

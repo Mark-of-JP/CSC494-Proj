@@ -9,5 +9,6 @@
 #include "./solvers/nelder_mead_solver.h"
 #include "./solvers/particle_swarm_solver.h"
 #include "./solvers/cma_es_solver.h"
+#include "./solvers/random_selection_solver.h"
 
 typedef unsigned int uint;

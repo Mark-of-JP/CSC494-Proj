@@ -14,13 +14,15 @@ class CMA_ES_Solver : public OptSolver {
             this->num_of_steps = num_of_steps;
         }
 
-        double* solve(OptProblem *optProblem, uint randomSeed) override {
+        double* solve(OptProblem *optProblem, uint randomSeed, std::vector<double> *best_answer, std::vector<int> *num_of_f_calls, std::vector<int> *num_of_time_passed) override {
+
+            // Record Time
+            auto started = std::chrono::high_resolution_clock::now();
 
             uint input_dimension = optProblem->getInputDimension();
 
             double *mean = optProblem->generateRandomFeasibleInputs(1, randomSeed)[0];
             Eigen::Map<Eigen::VectorXd> mean_vector(mean, input_dimension);
-            // std::cout << "Mean Vector: " << mean_vector << std::endl;
             Eigen::MatrixXd covariance_matrix = Eigen::MatrixXd::Identity(input_dimension, input_dimension);
             Eigen::MatrixXd samples_taken[num_of_samples];
 
@@ -64,20 +66,15 @@ class CMA_ES_Solver : public OptSolver {
 
                 }
 
-                
-
                 for (int sample_index = 0; sample_index < num_of_samples; sample_index++) {
                     // std::cout << "Order " << f_vals[sample_order[sample_index]] << std::endl;
                 }
-
 
                 Eigen::VectorXd aux_vector(input_dimension);
                 for (int sample_index = 0; sample_index < num_of_samples_kept; sample_index++) {
                     aux_vector += (samples_taken[sample_order[sample_index]] - mean_vector);
                 }
                 aux_vector = aux_vector / num_of_samples_kept;
-
-                // std::cout << "Aux " << aux_vector << std::endl;
 
 
                 //Moving mean
@@ -91,12 +88,15 @@ class CMA_ES_Solver : public OptSolver {
                 covariance_matrix = (0.8 * covariance_matrix) + (0.2) * (aux_vector / step_size) * (aux_vector.transpose() / step_size);
 
                 step_size *= exp(c_sigma / 1.1 * ((p_sigma.norm() / (sqrt(this->num_of_samples) * (1 - 1.0 / ((double) 4 * this->num_of_samples) + 1.0 / ((double) 21 * this->num_of_samples * this->num_of_samples)))) - 1));
-                // std::cout << step_size << std::endl;Goo
 
-                // std::cout << "Mean " << mean_vector << std::endl;
+                // Push to info
+                best_answer->push_back(f_vals[sample_order[0]]);
+                num_of_f_calls->push_back(optProblem->getNumCalled());
+
+                // Timer
+                auto done = std::chrono::high_resolution_clock::now();
+                num_of_time_passed->push_back(std::chrono::duration_cast<std::chrono::milliseconds>(done-started).count());
             }
-
-            // std::cout << samples_taken[sample_order[0]] << " -> " << f_vals[sample_order[0]] << std::endl;
 
             double *best_solution = new double[input_dimension];
 

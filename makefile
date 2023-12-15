@@ -1,7 +1,7 @@
 # Makefile for a C++ project with main.cpp
 
 CXX = g++              # C++ compiler
-CXXFLAGS = -Wall -I./problems -I./solvers -I/home/goose/UofT/CSC494/eigen-3.4.0 -std=c++14 
+CXXFLAGS = -Wall -I./problems -I./solvers -I/home/goose/UofT/CSC494/eigen-3.4.0 -std=c++14 -DNDEBUG
 
 SRCDIR = .
 PROBLEM_DIR = ./problems
@@ -9,7 +9,7 @@ PROBLEM_DIR = ./problems
 SOURCES = $(SRCDIR)/main.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
-PROGRAM = chungus
+PROGRAM = benchmark_opt
 
 all: $(PROGRAM)
 

@@ -51,9 +51,7 @@ struct PolynomialTerm {
             PolynomialTerm *new_term = new PolynomialTerm(this->num_of_terms, this->coefficient * other->coefficient);
 
             for (int i = 0; i < this->num_of_terms; i++) {
-                std::cout << i << " -> " << this->term_degrees[i]  << "+" << other->term_degrees[i] << std::endl;
                 new_term->term_degrees[i] = this->term_degrees[i] + other->term_degrees[i];
-                std::cout << i << " -> " << new_term->term_degrees[i] << std::endl;
             }
 
             return new_term;
@@ -75,6 +73,25 @@ struct PolynomialTerm {
             return antideriv;
         }
 
+        // Returns true if succeeded
+        bool Add(PolynomialTerm *other, PolynomialTerm *resulting_term) {
+
+            // Check if they have equivalent terms
+            for (int i = 0; i < this->num_of_terms; i++) {
+                if (this->term_degrees[i] != other->term_degrees[i]) {
+                    return false;
+                }
+            }
+
+            // Alter the new resulting terms
+            for (int i = 0; i < this->num_of_terms; i++) {
+                resulting_term->term_degrees[i] = this->term_degrees[i];
+            }
+            resulting_term->coefficient = this->coefficient + other->coefficient;
+
+            return true;
+        }
+
         double Evaluate(double *terms) {
             double value = this->coefficient;
 
@@ -92,7 +109,6 @@ struct PolynomialTerm {
                 if (this->term_degrees[i] > 0) {
                     to_string += "*(" + std::to_string(i) + ")^" + std::to_string(this->term_degrees[i]);
                 }
-                // std::cout << "BOOP > " << i << "/" <<  this->term_degrees[i] << std::endl;
             }
 
             return to_string;
